@@ -104,6 +104,7 @@ void loop() {
         forrigeFire = fireMin;
         forrigeEn = enMin;
         //sett poeng for pushups her
+        //for å fordele riktig poeng så man ta antallPushUps-1, siden antallPushUps starter med en når den tar tellingen
         antallPushUps = 0;
       }
     } else {
@@ -123,7 +124,7 @@ void enLys(int rnd) {
           digitalWrite(gronn, LOW);
           clicked++;
         }
-      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
+      } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -144,7 +145,7 @@ void enLys(int rnd) {
           digitalWrite(gul, LOW);
           clicked++;
         }
-      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
+      } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -165,7 +166,7 @@ void enLys(int rnd) {
           digitalWrite(rod, LOW);
           clicked++;
         }
-      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
+      } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -186,7 +187,7 @@ void enLys(int rnd) {
           digitalWrite(bla, LOW);
           clicked++;
         }
-      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
+      } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -211,7 +212,7 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, HIGH);
           digitalWrite(gul, HIGH);
         }
-      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
+      } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -235,7 +236,7 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, HIGH);
           digitalWrite(rod, HIGH);
         }
-      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
+      } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -259,7 +260,7 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, HIGH);
           digitalWrite(bla, HIGH);
         }
-      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
+      } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -283,7 +284,7 @@ void toLys(int rnd, int r) {
           digitalWrite(gul, HIGH);
           digitalWrite(rod, HIGH);
         }
-      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
+      } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -307,7 +308,7 @@ void toLys(int rnd, int r) {
           digitalWrite(gul, HIGH);
           digitalWrite(bla, HIGH);
         }
-      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
+      } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -331,7 +332,7 @@ void toLys(int rnd, int r) {
           digitalWrite(rod, HIGH);
           digitalWrite(bla, HIGH);
         }
-      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
+      } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -366,7 +367,7 @@ void PushUps() {
   digitalWrite(gul, LOW);
   digitalWrite(rod, LOW);
   digitalWrite(bla, LOW);
-  
+
   mellomrom = millis();
   micro = micros();
 
@@ -382,7 +383,6 @@ void PushUps() {
   varighet = pulseIn(echoPin, HIGH, 200000); //lagerer dataen til varighet
 
   cm = (varighet / 2) / 29.1; //gjør om tallene fra distance sensoren til cm
-
   if (cm <= 10) { // sjekker om man er innen 10cm til sensoren
     if (mellomrom - forrigeMellom > 350) {
       forrigeMellom = mellomrom;
@@ -393,5 +393,5 @@ void PushUps() {
   //fjern Serial.print og lcd med antall push-ups
   Serial.print(cm);
   Serial.print("cm");
-  Serial.println(antallPushUps);
+  Serial.println(antallPushUps - 1);//sensoren starter på 0 aom gjør at antallet starter på 1, så tar -1 for gjør at det kommer den riktige antallet
 }
