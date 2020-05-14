@@ -123,7 +123,7 @@ void enLys(int rnd) {
           digitalWrite(gronn, LOW);
           clicked++;
         }
-      }else{
+      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -144,7 +144,7 @@ void enLys(int rnd) {
           digitalWrite(gul, LOW);
           clicked++;
         }
-      }else{
+      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -165,7 +165,7 @@ void enLys(int rnd) {
           digitalWrite(rod, LOW);
           clicked++;
         }
-      }else{
+      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -186,7 +186,7 @@ void enLys(int rnd) {
           digitalWrite(bla, LOW);
           clicked++;
         }
-      }else{
+      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -211,7 +211,7 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, HIGH);
           digitalWrite(gul, HIGH);
         }
-      }else{
+      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -235,7 +235,7 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, HIGH);
           digitalWrite(rod, HIGH);
         }
-      }else{
+      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -259,7 +259,7 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, HIGH);
           digitalWrite(bla, HIGH);
         }
-      }else{
+      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -283,7 +283,7 @@ void toLys(int rnd, int r) {
           digitalWrite(gul, HIGH);
           digitalWrite(rod, HIGH);
         }
-      }else{
+      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -307,7 +307,7 @@ void toLys(int rnd, int r) {
           digitalWrite(gul, HIGH);
           digitalWrite(bla, HIGH);
         }
-      }else{
+      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -331,7 +331,7 @@ void toLys(int rnd, int r) {
           digitalWrite(rod, HIGH);
           digitalWrite(bla, HIGH);
         }
-      }else{
+      }else{ //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
@@ -361,30 +361,32 @@ void nyRandom() { //metode for aa generere nye tall for random
 }
 
 void PushUps() {
+  //slår av alle lysene til begynne med
   digitalWrite(gronn, LOW);
   digitalWrite(gul, LOW);
   digitalWrite(rod, LOW);
   digitalWrite(bla, LOW);
+  
   mellomrom = millis();
   micro = micros();
 
-  digitalWrite(trigPin, LOW);
-  if (micro - forrigeMicro > 5) {
+  digitalWrite(trigPin, LOW); //slår av Ultrasonic distance sensor
+  if (micro - forrigeMicro > 5) { //venter at den 5 microsekunder
     forrigeMicro = micro;
-    digitalWrite(trigPin, HIGH);
+    digitalWrite(trigPin, HIGH); //så slår den på distance sensor sånn at den sender lyd ut sånn at den kan detektere avstand
   }
-  if (micro - forrigeMicro > 10) {
+  if (micro - forrigeMicro > 10) { //venter 5 microsekunder så slår den av
     forrigeMicro = micro;
     digitalWrite(trigPin, LOW);
   }
-  varighet = pulseIn(echoPin, HIGH, 200000);
+  varighet = pulseIn(echoPin, HIGH, 200000); //lagerer dataen til varighet
 
-  cm = (varighet / 2) / 29.1;;
+  cm = (varighet / 2) / 29.1; //gjør om tallene fra distance sensoren til cm
 
-  if (cm <= 10) {
+  if (cm <= 10) { // sjekker om man er innen 10cm til sensoren
     if (mellomrom - forrigeMellom > 350) {
       forrigeMellom = mellomrom;
-      antallPushUps++;
+      antallPushUps++;// legger det til tellingen
     }
   }
 
