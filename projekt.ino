@@ -19,6 +19,10 @@ unsigned long tid;
 unsigned long forrige = 0;
 unsigned long timer = 0;
 unsigned long forrigeTimer = 0;
+unsigned long fireMin = 0;
+unsigned long forrigeFire = 0;
+unsigned long enMin = 0;
+unsigned long forrigeEn = 0;
 int start;
 int clicked = 0;
 int intervall = 1000;
@@ -47,6 +51,8 @@ void setup() {
 
 }
 
+
+
 void loop() {
   debounce = millis();//Debounce for gjoor at knappen ikke start ikke stopper med engang hvis man holder det litt for lenge
   if (debounce - forrigeDebounce > 500) {
@@ -55,8 +61,9 @@ void loop() {
       if (start == 0) { //gjoor at den kjoorer
         start = 255;
         forrigeTimer = timer;
+        forrigeFire = fireMin;
+        forrigeEn = enMin;
       } else { //trykker en gang til for aa gjoore at den ikke kjoorer
-        start = 0;
         ferdig();
       }
     }
@@ -65,19 +72,33 @@ void loop() {
   if (start > 0) {
     timer = millis();
     if (timer - forrigeTimer < 600000) { //programmet skal vaere 10 min lang foor den slaar seg av
-      tid = millis();
-      if (tid - forrige > intervall) { //intervaller for naar det skal komme random nummer
-        forrige = tid;
-        nyRandom(); //generere nye tall
+      fireMin = millis();
+      enMin = millis();
+      if (fireMin - forrigeFire < 240000) { //programmet for selve danse delen
+        tid = millis();
+        if (tid - forrige > intervall) { //intervaller for naar det skal komme random nummer
+          forrige = tid;
+          nyRandom(); //generere nye tall
+        }
+        if (enEllerTo == 0) { //bestemmer om det skal vaere en eller to lys som slaar paa
+          enLys(randomNumber);
+        } else {
+          toLys(randomNumber, r2);
+        }
       }
-      if (enEllerTo == 0) { //bestemmer om det skal vaere en eller to lys som slaar paa
-        enLys(randomNumber);
-      } else {
-        toLys(randomNumber, r2);
+      if (enMin - forrigeEn > 240000) { // programmet for push-ups delen
+        //endre dette til push-ups
+        digitalWrite(gronn, HIGH);
+        digitalWrite(gul, HIGH);
+        digitalWrite(rod, HIGH);
+        digitalWrite(bla, HIGH);
+      }
+      if (enMin - forrigeEn > 300000) {//reset da forrigeFire og forrigeEn, saann at det er mulig ta danse og push-ups delen paa nytt
+        forrigeFire = fireMin;
+        forrigeEn = enMin;
       }
     } else {
       ferdig();
-      start = 0;
     }
   }
 }
@@ -274,11 +295,14 @@ void toLys(int rnd, int r) {
   }
 }
 
-void ferdig() {
+void ferdig() { //dette kjøører naar man har stoppet programmet eller naar tiden har stoppet
   digitalWrite(gronn, LOW);
   digitalWrite(gul, LOW);
   digitalWrite(rod, LOW);
   digitalWrite(bla, LOW);
+  start = 0;
+  forrigeFire = fireMin;
+  forrigeEn = enMin;
 }
 
 void nyRandom() { //metode for aa generere nye tall for random
