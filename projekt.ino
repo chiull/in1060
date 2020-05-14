@@ -42,20 +42,20 @@ void setup() {
   digitalWrite(startButton, LOW);
   start = 0;
 
-  //RandomSeed er for å kunne gjøre at det blir random tall hele tiden ved å bruke en analog port som ikke blir brukt.
+  //RandomSeed er for aa kunne gjoore at det blir random tall hele tiden ved aa bruke en analog port som ikke blir brukt.
   randomSeed(analogRead(A0));
 
 }
 
 void loop() {
-  debounce = millis();//Debounce for gjør at knappen ikke start ikke stopper med engang hvis man holder det litt for lenge
+  debounce = millis();//Debounce for gjoor at knappen ikke start ikke stopper med engang hvis man holder det litt for lenge
   if (debounce - forrigeDebounce > 500) {
-    if (digitalRead(startButton) == HIGH) { //trykker på start knappen gjør at den kan kjøre
+    if (digitalRead(startButton) == HIGH) { //trykker paa start knappen gjoor at den kan kjoore
       forrigeDebounce = debounce;
-      if (start == 0) { //gjør at den kjører
+      if (start == 0) { //gjoor at den kjoorer
         start = 255;
         forrigeTimer = timer;
-      } else { //trykker en gang til for å gjøre at den ikke kjører
+      } else { //trykker en gang til for aa gjoore at den ikke kjoorer
         start = 0;
         ferdig();
       }
@@ -64,13 +64,13 @@ void loop() {
 
   if (start > 0) {
     timer = millis();
-    if (timer - forrigeTimer < 600000) { //programmet skal være 10 min lang før den slår seg av
+    if (timer - forrigeTimer < 600000) { //programmet skal vaere 10 min lang foor den slaar seg av
       tid = millis();
-      if (tid - forrige > intervall) { //intervaller for når det skal komme random nummer
+      if (tid - forrige > intervall) { //intervaller for naar det skal komme random nummer
         forrige = tid;
         nyRandom(); //generere nye tall
       }
-      if (enEllerTo == 0) { //bestemmer om det skal være en eller to lys som slår på
+      if (enEllerTo == 0) { //bestemmer om det skal vaere en eller to lys som slaar paa
         enLys(randomNumber);
       } else {
         toLys(randomNumber, r2);
@@ -280,7 +280,7 @@ void ferdig() {
   digitalWrite(bla, LOW);
 }
 
-void nyRandom() { //metode for å generere nye tall for random
+void nyRandom() { //metode for aa generere nye tall for random
   enEllerTo = random(0, 2);
   randomNumber = random(0, 4);
   r2 = random(0, 4);
