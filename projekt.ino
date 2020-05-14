@@ -1,3 +1,4 @@
+//Pin som blir brukt
 int gronn = 2;
 int gul = 3;
 int rod = 4;
@@ -6,21 +7,23 @@ int gronnKnapp = A4;
 int gulKnapp = A3;
 int rodKnapp = A2;
 int blaKnapp = A1;
-int start = 6;
-//legg til flere knapper
+int startButton = 6;
 
 //variabler som skal holde de random tallene
-long randomNumber;
-long r2;
+unsigned long randomNumber;
+unsigned long r2;
 long enEllerTo;
 
+//variabler som blir brukt
 unsigned long tid;
-unsigned long forrigeTimer = 0;
 unsigned long forrige = 0;
+unsigned long timer = 0;
+unsigned long forrigeTimer = 0;
+int start;
 int clicked = 0;
 int intervall = 1000;
-unsigned long timer = 0;
-int run;
+int debounce = 0;
+int forrigeDebounce = 0;
 
 void setup() {
   pinMode(gronn, OUTPUT);
@@ -31,12 +34,13 @@ void setup() {
   pinMode(gulKnapp, INPUT);
   pinMode(rodKnapp, INPUT);
   pinMode(blaKnapp, INPUT);
+  pinMode(startButton, INPUT);
   digitalWrite(gronnKnapp, HIGH);
   digitalWrite(gulKnapp, HIGH);
   digitalWrite(rodKnapp, HIGH);
   digitalWrite(blaKnapp, HIGH);
-  run = 0;
-
+  digitalWrite(startButton, LOW);
+  start = 0;
 
   //RandomSeed er for å kunne gjøre at det blir random tall hele tiden ved å bruke en analog port som ikke blir brukt.
   randomSeed(analogRead(A0));
@@ -44,25 +48,27 @@ void setup() {
 }
 
 void loop() {
-  if (digitalRead(start) == HIGH) { //trykker på start knappen gjør at den kan kjøre
-    if (run == 0) { //gjør at den kjører
-      run = 255;
-      forrigeTimer = timer;
-    } else { //trykker en gang til for å gjøre at den ikke kjører
-      run = 0;
-      ferdig();
+  debounce = millis();//Debounce for gjør at knappen ikke start ikke stopper med engang hvis man holder det litt for lenge
+  if (debounce - forrigeDebounce > 500) {
+    if (digitalRead(startButton) == HIGH) { //trykker på start knappen gjør at den kan kjøre
+      forrigeDebounce = debounce;
+      if (start == 0) { //gjør at den kjører
+        start = 255;
+        forrigeTimer = timer;
+      } else { //trykker en gang til for å gjøre at den ikke kjører
+        start = 0;
+        ferdig();
+      }
     }
   }
 
-  if (run > 0) {
+  if (start > 0) {
     timer = millis();
     if (timer - forrigeTimer < 600000) { //programmet skal være 10 min lang før den slår seg av
       tid = millis();
       if (tid - forrige > intervall) { //intervaller for når det skal komme random nummer
         forrige = tid;
-        enEllerTo = random(0, 2);
-        randomNumber = random(0, 4);
-        r2 = random(0, 4);
+        nyRandom(); //generere nye tall
       }
       if (enEllerTo == 0) { //bestemmer om det skal være en eller to lys som slår på
         enLys(randomNumber);
@@ -272,4 +278,10 @@ void ferdig() {
   digitalWrite(gul, LOW);
   digitalWrite(rod, LOW);
   digitalWrite(bla, LOW);
+}
+
+void nyRandom() { //metode for å generere nye tall for random
+  enEllerTo = random(0, 2);
+  randomNumber = random(0, 4);
+  r2 = random(0, 4);
 }
