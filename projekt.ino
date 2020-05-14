@@ -36,7 +36,7 @@ unsigned long enMin = 0;
 unsigned long forrigeEn = 0;
 int start = 0;
 int clicked = 0;
-int intervall = 1000;
+int intervall = 1500;
 int debounce = 0;
 int forrigeDebounce = 0;
 
