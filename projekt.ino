@@ -14,6 +14,17 @@ unsigned long randomNumber;
 unsigned long r2;
 long enEllerTo;
 
+//variabler for push-ups/ultrasonic distance sensor
+int trigPin = A5;
+int echoPin = 7;
+unsigned long varighet = 0;
+unsigned long cm = 0;
+int antallPushUps = 0;
+unsigned long mellomrom = 0;
+unsigned long forrigeMellom = 0;
+unsigned long micro = 0;
+unsigned long forrigeMicro = 0;
+
 //variabler som blir brukt
 unsigned long tid;
 unsigned long forrige = 0;
@@ -23,13 +34,14 @@ unsigned long fireMin = 0;
 unsigned long forrigeFire = 0;
 unsigned long enMin = 0;
 unsigned long forrigeEn = 0;
-int start;
+int start = 0;
 int clicked = 0;
 int intervall = 1000;
 int debounce = 0;
 int forrigeDebounce = 0;
 
 void setup() {
+  Serial.begin (9600); //teste pushups
   pinMode(gronn, OUTPUT);
   pinMode(gul, OUTPUT);
   pinMode(rod, OUTPUT);
@@ -39,19 +51,18 @@ void setup() {
   pinMode(rodKnapp, INPUT);
   pinMode(blaKnapp, INPUT);
   pinMode(startButton, INPUT);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
   digitalWrite(gronnKnapp, HIGH);
   digitalWrite(gulKnapp, HIGH);
   digitalWrite(rodKnapp, HIGH);
   digitalWrite(blaKnapp, HIGH);
   digitalWrite(startButton, LOW);
-  start = 0;
 
   //RandomSeed er for aa kunne gjoore at det blir random tall hele tiden ved aa bruke en analog port som ikke blir brukt.
   randomSeed(analogRead(A0));
 
 }
-
-
 
 void loop() {
   debounce = millis();//Debounce for gjoor at knappen ikke start ikke stopper med engang hvis man holder det litt for lenge
@@ -87,15 +98,13 @@ void loop() {
         }
       }
       if (enMin - forrigeEn > 240000) { // programmet for push-ups delen
-        //endre dette til push-ups
-        digitalWrite(gronn, HIGH);
-        digitalWrite(gul, HIGH);
-        digitalWrite(rod, HIGH);
-        digitalWrite(bla, HIGH);
+        PushUps();
       }
       if (enMin - forrigeEn > 300000) {//reset da forrigeFire og forrigeEn, saann at det er mulig ta danse og push-ups delen paa nytt
         forrigeFire = fireMin;
         forrigeEn = enMin;
+        //sett poeng for pushups her
+        antallPushUps = 0;
       }
     } else {
       ferdig();
@@ -114,6 +123,10 @@ void enLys(int rnd) {
           digitalWrite(gronn, LOW);
           clicked++;
         }
+      }else{
+        forrige = tid;
+        nyRandom();
+        clicked = 0;
       }
     }
   } else {
@@ -131,6 +144,10 @@ void enLys(int rnd) {
           digitalWrite(gul, LOW);
           clicked++;
         }
+      }else{
+        forrige = tid;
+        nyRandom();
+        clicked = 0;
       }
     }
   } else {
@@ -148,6 +165,10 @@ void enLys(int rnd) {
           digitalWrite(rod, LOW);
           clicked++;
         }
+      }else{
+        forrige = tid;
+        nyRandom();
+        clicked = 0;
       }
     }
   } else {
@@ -165,6 +186,10 @@ void enLys(int rnd) {
           digitalWrite(bla, LOW);
           clicked++;
         }
+      }else{
+        forrige = tid;
+        nyRandom();
+        clicked = 0;
       }
     }
   } else {
@@ -186,6 +211,10 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, HIGH);
           digitalWrite(gul, HIGH);
         }
+      }else{
+        forrige = tid;
+        nyRandom();
+        clicked = 0;
       }
     }
   } else {
@@ -206,6 +235,10 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, HIGH);
           digitalWrite(rod, HIGH);
         }
+      }else{
+        forrige = tid;
+        nyRandom();
+        clicked = 0;
       }
     }
   } else {
@@ -226,6 +259,10 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, HIGH);
           digitalWrite(bla, HIGH);
         }
+      }else{
+        forrige = tid;
+        nyRandom();
+        clicked = 0;
       }
     }
   } else {
@@ -246,6 +283,10 @@ void toLys(int rnd, int r) {
           digitalWrite(gul, HIGH);
           digitalWrite(rod, HIGH);
         }
+      }else{
+        forrige = tid;
+        nyRandom();
+        clicked = 0;
       }
     }
   } else {
@@ -266,6 +307,10 @@ void toLys(int rnd, int r) {
           digitalWrite(gul, HIGH);
           digitalWrite(bla, HIGH);
         }
+      }else{
+        forrige = tid;
+        nyRandom();
+        clicked = 0;
       }
     }
   } else {
@@ -286,6 +331,10 @@ void toLys(int rnd, int r) {
           digitalWrite(rod, HIGH);
           digitalWrite(bla, HIGH);
         }
+      }else{
+        forrige = tid;
+        nyRandom();
+        clicked = 0;
       }
     }
   } else {
@@ -309,4 +358,38 @@ void nyRandom() { //metode for aa generere nye tall for random
   enEllerTo = random(0, 2);
   randomNumber = random(0, 4);
   r2 = random(0, 4);
+}
+
+void PushUps() {
+  digitalWrite(gronn, LOW);
+  digitalWrite(gul, LOW);
+  digitalWrite(rod, LOW);
+  digitalWrite(bla, LOW);
+  mellomrom = millis();
+  micro = micros();
+
+  digitalWrite(trigPin, LOW);
+  if (micro - forrigeMicro > 5) {
+    forrigeMicro = micro;
+    digitalWrite(trigPin, HIGH);
+  }
+  if (micro - forrigeMicro > 10) {
+    forrigeMicro = micro;
+    digitalWrite(trigPin, LOW);
+  }
+  varighet = pulseIn(echoPin, HIGH, 200000);
+
+  cm = (varighet / 2) / 29.1;;
+
+  if (cm <= 10) {
+    if (mellomrom - forrigeMellom > 350) {
+      forrigeMellom = mellomrom;
+      antallPushUps++;
+    }
+  }
+
+  //fjern Serial.print og lcd med antall push-ups
+  Serial.print(cm);
+  Serial.print("cm");
+  Serial.println(antallPushUps);
 }
