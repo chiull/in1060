@@ -77,6 +77,7 @@ void loop() {
       }
     } else {
       ferdig();
+      start = 0;
     }
   }
 }
