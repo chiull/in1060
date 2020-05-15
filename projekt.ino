@@ -104,7 +104,6 @@ void loop() {
         forrigeFire = fireMin;
         forrigeEn = enMin;
         //sett poeng for pushups her
-        //for å fordele riktig poeng så man ta antallPushUps-1, siden antallPushUps starter med en når den tar tellingen
         antallPushUps = 0;
       }
     } else {
@@ -371,14 +370,14 @@ void PushUps() {
   mellomrom = millis();
   micro = micros();
 
-  digitalWrite(trigPin, LOW); //slår av Ultrasonic distance sensor
+  digitalWrite(trigPin, HIGH); //slår av Ultrasonic distance sensor
   if (micro - forrigeMicro > 5) { //venter at den 5 microsekunder
     forrigeMicro = micro;
-    digitalWrite(trigPin, HIGH); //så slår den på distance sensor sånn at den sender lyd ut sånn at den kan detektere avstand
+    digitalWrite(trigPin, LOW); //så slår den på distance sensor sånn at den sender lyd ut sånn at den kan detektere avstand
   }
   if (micro - forrigeMicro > 10) { //venter 5 microsekunder så slår den av
     forrigeMicro = micro;
-    digitalWrite(trigPin, LOW);
+    digitalWrite(trigPin, HIGH);
   }
   varighet = pulseIn(echoPin, HIGH, 200000); //lagerer dataen til varighet
 
@@ -393,5 +392,5 @@ void PushUps() {
   //fjern Serial.print og lcd med antall push-ups
   Serial.print(cm);
   Serial.print("cm");
-  Serial.println(antallPushUps - 1);//sensoren starter på 0 aom gjør at antallet starter på 1, så tar -1 for gjør at det kommer den riktige antallet
+  Serial.println(antallPushUps);
 }
