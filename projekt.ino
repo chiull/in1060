@@ -19,7 +19,11 @@ long enEllerTo;
 //variabler for poengsum utregninga
 LiquidCrystal lcd(13, 12, 11, 10, 9, 8);
 int Contrast = 75;
-int totalsum = 0;
+unsigned long totalsum = 0;
+unsigned long endeligSum = 0;
+unsigned long highScore = 0;
+unsigned long interv = 0;
+unsigned long forrigeInterv = 0;
 int stor = 300;
 int medium = 100;
 int liten = 50;
@@ -44,7 +48,7 @@ unsigned long fireMin = 0;
 unsigned long forrigeFire = 0;
 unsigned long enMin = 0;
 unsigned long forrigeEn = 0;
-int start = 255;
+int start = 0;
 int clicked = 0;
 int intervall = 1500;
 int debounce = 0;
@@ -79,10 +83,8 @@ void setup() {
 
 void loop() {
   if (start == 0) { //skal vise til brukeren at de kan starte spillet
-    lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("Start spillet");
-    lcd.clear();
   }
 
   debounce = millis();//Debounce for gjoor at knappen ikke start ikke stopper med engang hvis man holder det litt for lenge
@@ -94,21 +96,22 @@ void loop() {
         forrigeTimer = timer;
         forrigeFire = fireMin;
         forrigeEn = enMin;
+        lcd.clear();
       } else { //trykker en gang til for aa gjoore at den ikke kjoorer
         ferdig();
+        lcd.clear();
       }
     }
   }
 
   if (start > 0) {
     timer = millis();
-    
-    lcd.setCursor(0, 0);
-    lcd.print("SCORE");
-    lcd.setCursor(0, 1);
-    lcd.print(totalsum);
 
     if (timer - forrigeTimer < 600000) { //programmet skal vaere 10 min lang foor den slaar seg av
+      lcd.setCursor(0, 0);
+      lcd.print("SCORE");
+      lcd.setCursor(0, 1);
+      lcd.print(totalsum);
       fireMin = millis();
       enMin = millis();
       if (fireMin - forrigeFire < 240000) { //programmet for selve danse delen
@@ -129,10 +132,27 @@ void loop() {
       if (enMin - forrigeEn > 300000) {//reset da forrigeFire og forrigeEn, saann at det er mulig ta danse og push-ups delen paa nytt
         forrigeFire = fireMin;
         forrigeEn = enMin;
-        //sett poeng for pushups her
         antallPushUps = 0;
+        lcd.clear();
       }
     } else {
+      interv = millis();
+      if (totalsum > highScore) {
+        highScore = totalsum;
+      }
+      endeligSum = totalsum;
+      if (interv - forrigeInterv > 0) {
+        lcd.setCursor(0, 0);
+        lcd.print("SCORE");
+        lcd.setCursor(0, 1);
+        lcd.print(endeligSum);
+      }
+      if (interv - forrigeInterv > 5000) {
+        lcd.setCursor(0, 0);
+        lcd.print("HIGHSCORE");
+        lcd.setCursor(0, 1);
+        lcd.print(highScore);
+      }
       ferdig();
     }
   }
@@ -456,52 +476,46 @@ void PushUps() {
   if (cm <= 10) { // sjekker om man er innen 10cm til sensoren
     if (mellomrom - forrigeMellom > 350) {
       forrigeMellom = mellomrom;
-      lcd.setCursor(0, 0);
-      lcd.print("SCORE:");
-      lcd.setCursor(0, 1);
-      totalsum + stor;
-      lcd.print(totalsum + " +300");
-      if (antallPushUps == 1) {
-        lcd.setCursor(0, 0);
-        lcd.print("SCORE:");
-        lcd.setCursor(0, 1);
-        totalsum + 500;
-        lcd.print(totalsum + " +800");
+      if (antallPushUps == 0); {
+        lcd.setCursor(10, 1);
+        lcd.print("+300");
+        totalsum += stor;
+        lcd.clear();
       }
-      if (antallPushUps == 2) {
-        lcd.setCursor(0, 0);
-        lcd.print("SCORE:");
-        lcd.setCursor(0, 1);
-        totalsum + 600;
-        lcd.print(totalsum + " +900");
+      if (antallPushUps == 1) {
+        lcd.setCursor(10, 1);
+        lcd.print("+500");
+        totalsum += 500;
+        lcd.clear();
       }
       if (antallPushUps == 3) {
-        lcd.setCursor(0, 0);
-        lcd.print("SCORE:");
-        lcd.setCursor(0, 1);
-        totalsum + 700;
-        lcd.print(totalsum + " +1000");
+        lcd.setCursor(10, 1);
+        lcd.print("+600");
+        totalsum += 600;
       }
       if (antallPushUps == 4) {
-        lcd.setCursor(0, 0);
-        lcd.print("SCORE:");
-        lcd.setCursor(0, 1);
-        totalsum + 800;
-        lcd.print(totalsum + " +1100");
+        lcd.setCursor(10, 1);
+        lcd.print("+700");
+        totalsum += 700;
+        lcd.clear();
       }
       if (antallPushUps == 5) {
-        lcd.setCursor(0, 0);
-        lcd.print("SCORE:");
-        lcd.setCursor(0, 1);
-        totalsum + 900;
-        lcd.print(totalsum + " +1200");
+        lcd.setCursor(10, 1);
+        lcd.print("+800");
+        totalsum += 800;
+        lcd.clear();
       }
-      if (antallPushUps > 5) {
-        lcd.setCursor(0, 0);
-        lcd.print("SCORE:");
-        lcd.setCursor(0, 1);
-        totalsum + 1000;
-        lcd.print(totalsum + " +1300");
+      if (antallPushUps == 6) {
+        lcd.setCursor(10, 1);
+        lcd.print("+900");
+        totalsum += 900;
+        lcd.clear();
+      }
+      if (antallPushUps > 6) {
+        lcd.setCursor(10, 1);
+        lcd.print("+1000");
+        totalsum += 1000;
+        lcd.clear();
       }
       antallPushUps++;// legger det til tellingen
     }
