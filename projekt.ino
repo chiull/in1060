@@ -480,13 +480,11 @@ void PushUps() {
         lcd.setCursor(10, 1);
         lcd.print("+300");
         totalsum += stor;
-        lcd.clear();
       }
       if (antallPushUps == 1) {
         lcd.setCursor(10, 1);
         lcd.print("+500");
         totalsum += 500;
-        lcd.clear();
       }
       if (antallPushUps == 3) {
         lcd.setCursor(10, 1);
@@ -497,25 +495,21 @@ void PushUps() {
         lcd.setCursor(10, 1);
         lcd.print("+700");
         totalsum += 700;
-        lcd.clear();
       }
       if (antallPushUps == 5) {
         lcd.setCursor(10, 1);
         lcd.print("+800");
         totalsum += 800;
-        lcd.clear();
       }
       if (antallPushUps == 6) {
         lcd.setCursor(10, 1);
         lcd.print("+900");
         totalsum += 900;
-        lcd.clear();
       }
       if (antallPushUps > 6) {
         lcd.setCursor(10, 1);
         lcd.print("+1000");
         totalsum += 1000;
-        lcd.clear();
       }
       antallPushUps++;// legger det til tellingen
     }
