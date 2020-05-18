@@ -143,7 +143,7 @@ void loop() {
       endeligSum = totalsum;
       if (interv - forrigeInterv > 0) {
         lcd.setCursor(0, 0);
-        lcd.print("SCORE");
+        lcd.print("FINAL SCORE");
         lcd.setCursor(0, 1);
         lcd.print(endeligSum);
       }
@@ -152,6 +152,9 @@ void loop() {
         lcd.print("HIGHSCORE");
         lcd.setCursor(0, 1);
         lcd.print(highScore);
+      }
+      if (interv - forrigeInterv > 5000) {
+        forrigeInterv = interv;
       }
       ferdig();
     }
