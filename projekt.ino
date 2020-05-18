@@ -102,7 +102,7 @@ void loop() {
 
   if (start > 0) {
     timer = millis();
-    lcd.clear();
+    
     lcd.setCursor(0, 0);
     lcd.print("SCORE");
     lcd.setCursor(0, 1);
