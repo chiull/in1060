@@ -17,7 +17,8 @@ unsigned long r2;
 long enEllerTo;
 
 //variabler for poengsum utregninga
-LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+LiquidCrystal lcd(13, 12, 11, 10, 9, 8);
+int Contrast = 75;
 int totalsum = 0;
 int stor = 300;
 int medium = 100;
@@ -50,7 +51,7 @@ int debounce = 0;
 int forrigeDebounce = 0;
 
 void setup() {
-  Serial.begin (9600); //teste pushups
+  analogWrite(1, Contrast);
   pinMode(gronn, OUTPUT);
   pinMode(gul, OUTPUT);
   pinMode(rod, OUTPUT);
@@ -67,7 +68,7 @@ void setup() {
   digitalWrite(rodKnapp, HIGH);
   digitalWrite(blaKnapp, HIGH);
   digitalWrite(startButton, LOW);
-  
+
   //skjermsetup
   lcd.begin(16, 2);
 
@@ -77,12 +78,13 @@ void setup() {
 }
 
 void loop() {
-  if(start == 0){ //skal vise til brukeren at de kan starte spillet
-    lcd.setCursor(0,0);
+  if (start == 0) { //skal vise til brukeren at de kan starte spillet
+    lcd.clear();
+    lcd.setCursor(0, 0);
     lcd.print("Start spillet");
     lcd.clear();
   }
-  
+
   debounce = millis();//Debounce for gjoor at knappen ikke start ikke stopper med engang hvis man holder det litt for lenge
   if (debounce - forrigeDebounce > 500) {
     if (digitalRead(startButton) == HIGH) { //trykker paa start knappen gjoor at den kan kjoore
@@ -100,9 +102,12 @@ void loop() {
 
   if (start > 0) {
     timer = millis();
-    lcd.setCursor(0,0);
+    lcd.clear();
+    lcd.setCursor(0, 0);
     lcd.print("SCORE");
-    
+    lcd.setCursor(0, 1);
+    lcd.print(totalsum);
+
     if (timer - forrigeTimer < 600000) { //programmet skal vaere 10 min lang foor den slaar seg av
       fireMin = millis();
       enMin = millis();
@@ -125,7 +130,6 @@ void loop() {
         forrigeFire = fireMin;
         forrigeEn = enMin;
         //sett poeng for pushups her
-        //for å fordele riktig poeng så man ta antallPushUps-1, siden antallPushUps starter med en når den tar tellingen
         antallPushUps = 0;
       }
     } else {
@@ -141,14 +145,19 @@ void enLys(int rnd) {
       if (clicked == 0) {
         if (digitalRead(gronnKnapp) == HIGH) {
           digitalWrite(gronn, HIGH);
+          digitalWrite(gul, LOW);
+          digitalWrite(rod, LOW);
+          digitalWrite(bla, LOW);
         } else {
           digitalWrite(gronn, LOW);
+          totalsum += stor;
           clicked++;
         }
       } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
         nyRandom();
         clicked = 0;
+        digitalWrite(gronn, LOW);
       }
     }
   } else {
@@ -161,16 +170,14 @@ void enLys(int rnd) {
     if (rnd == 1) {
       if (clicked == 0) {
         if (digitalRead(gulKnapp) == HIGH) {
+          digitalWrite(gronn, LOW);
           digitalWrite(gul, HIGH);
+          digitalWrite(rod, LOW);
+          digitalWrite(bla, LOW);
         } else {
           digitalWrite(gul, LOW);
           //gir poeng paa riktig klikk
-          lcd.clear();
-          lcd.setCursor(0,0);
-          lcd.print("SCORE:");
-          lcd.setCursor(0,1);
-          totalsum + stor;
-          lcd.print(totalsum + " +300");
+          totalsum += stor;
           clicked++;
         }
       } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
@@ -189,16 +196,14 @@ void enLys(int rnd) {
     if (rnd == 2) {
       if (clicked == 0) {
         if (digitalRead(rodKnapp) == HIGH) {
+          digitalWrite(gronn, LOW);
+          digitalWrite(gul, LOW);
           digitalWrite(rod, HIGH);
+          digitalWrite(bla, LOW);
         } else {
           digitalWrite(rod, LOW);
           //gir poeng paa riktig klikk
-          lcd.clear();
-          lcd.setCursor(0,0);
-          lcd.print("SCORE:");
-          lcd.setCursor(0,1);
-          totalsum + stor;
-          lcd.print(totalsum + " +300");
+          totalsum += stor;
           clicked++;
         }
       } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
@@ -217,16 +222,14 @@ void enLys(int rnd) {
     if (rnd == 3) {
       if (clicked == 0) {
         if (digitalRead(blaKnapp) == HIGH) {
+          digitalWrite(gronn, LOW);
+          digitalWrite(gul, LOW);
+          digitalWrite(rod, LOW);
           digitalWrite(bla, HIGH);
         } else {
           digitalWrite(bla, LOW);
           //gir poeng paa riktig klikk
-          lcd.clear();
-          lcd.setCursor(0,0);
-          lcd.print("SCORE:");
-          lcd.setCursor(0,1);
-          totalsum + stor;
-          lcd.print(totalsum + " +300");
+          totalsum += stor;
           clicked++;
         }
       } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
@@ -250,16 +253,13 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, LOW);
           digitalWrite(gul, LOW);
           //gir poeng paa riktig klikk
-          lcd.clear();
-          lcd.setCursor(0,0);
-          lcd.print("SCORE:");
-          lcd.setCursor(0,1);
-          totalsum + stor;
-          lcd.print(totalsum + " +300");
+          totalsum += stor;
           clicked++;
         } else {
           digitalWrite(gronn, HIGH);
           digitalWrite(gul, HIGH);
+          digitalWrite(rod, LOW);
+          digitalWrite(bla, LOW);
         }
       } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
@@ -281,16 +281,13 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, LOW);
           digitalWrite(rod, LOW);
           //gir poeng paa riktig klikk
-          lcd.clear();
-          lcd.setCursor(0,0);
-          lcd.print("SCORE");
-          lcd.setCursor(0,1);
-          totalsum + stor;
-          lcd.print(totalsum + " +300");
+          totalsum += stor;
           clicked++;
         } else {
           digitalWrite(gronn, HIGH);
           digitalWrite(rod, HIGH);
+          digitalWrite(gul, LOW);
+          digitalWrite(bla, LOW);
         }
       } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
@@ -312,16 +309,13 @@ void toLys(int rnd, int r) {
           digitalWrite(gronn, LOW);
           digitalWrite(bla, LOW);
           //gir poeng paa riktig klikk
-          lcd.clear();
-          lcd.setCursor(0,0);
-          lcd.print("SCORE");
-          lcd.setCursor(0,1);
-          totalsum + stor;
-          lcd.print(totalsum + " +300");
+          totalsum += stor;
           clicked++;
         } else {
           digitalWrite(gronn, HIGH);
           digitalWrite(bla, HIGH);
+          digitalWrite(gul, LOW);
+          digitalWrite(rod, LOW);
         }
       } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
@@ -343,16 +337,13 @@ void toLys(int rnd, int r) {
           digitalWrite(gul, LOW);
           digitalWrite(rod, LOW);
           //gir poeng paa riktig klikk
-          lcd.clear();
-          lcd.setCursor(0,0);
-          lcd.print("SCORE");
-          lcd.setCursor(0,1);
-          totalsum + stor;
-          lcd.print(totalsum + " +300");
+          totalsum += stor;
           clicked++;
         } else {
           digitalWrite(gul, HIGH);
           digitalWrite(rod, HIGH);
+          digitalWrite(gronn, LOW);
+          digitalWrite(bla, LOW);
         }
       } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
@@ -374,16 +365,13 @@ void toLys(int rnd, int r) {
           digitalWrite(gul, LOW);
           digitalWrite(bla, LOW);
           //gir poeng paa riktig klikk
-          lcd.clear();
-          lcd.setCursor(0,0);
-          lcd.print("SCORE:");
-          lcd.setCursor(0,1);
-          totalsum + stor;
-          lcd.print(totalsum + " +300");
+          totalsum += stor;
           clicked++;
         } else {
           digitalWrite(gul, HIGH);
           digitalWrite(bla, HIGH);
+          digitalWrite(gronn, LOW);
+          digitalWrite(rod, LOW);
         }
       } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
@@ -405,16 +393,13 @@ void toLys(int rnd, int r) {
           digitalWrite(rod, LOW);
           digitalWrite(bla, LOW);
           //gir poeng paa riktig klikk
-          lcd.clear();
-          lcd.setCursor(0,0);
-          lcd.print("SCORE:");
-          lcd.setCursor(0,1);
-          totalsum + stor;
-          lcd.print(totalsum + " +300");
+          totalsum += stor;
           clicked++;
         } else {
           digitalWrite(rod, HIGH);
           digitalWrite(bla, HIGH);
+          digitalWrite(gronn, LOW);
+          digitalWrite(gul, LOW);
         }
       } else { //gjør at det skifter farge med engang istedenfor å vente til tiden har gått
         forrige = tid;
@@ -437,6 +422,7 @@ void ferdig() { //dette kjøører naar man har stoppet programmet eller naar tid
   start = 0;
   forrigeFire = fireMin;
   forrigeEn = enMin;
+  totalsum = 0;
 }
 
 void nyRandom() { //metode for aa generere nye tall for random
@@ -455,14 +441,14 @@ void PushUps() {
   mellomrom = millis();
   micro = micros();
 
-  digitalWrite(trigPin, LOW); //slår av Ultrasonic distance sensor
+  digitalWrite(trigPin, HIGH); //slår av Ultrasonic distance sensor
   if (micro - forrigeMicro > 5) { //venter at den 5 microsekunder
     forrigeMicro = micro;
-    digitalWrite(trigPin, HIGH); //så slår den på distance sensor sånn at den sender lyd ut sånn at den kan detektere avstand
+    digitalWrite(trigPin, LOW); //så slår den på distance sensor sånn at den sender lyd ut sånn at den kan detektere avstand
   }
   if (micro - forrigeMicro > 10) { //venter 5 microsekunder så slår den av
     forrigeMicro = micro;
-    digitalWrite(trigPin, LOW);
+    digitalWrite(trigPin, HIGH);
   }
   varighet = pulseIn(echoPin, HIGH, 200000); //lagerer dataen til varighet
 
@@ -470,59 +456,54 @@ void PushUps() {
   if (cm <= 10) { // sjekker om man er innen 10cm til sensoren
     if (mellomrom - forrigeMellom > 350) {
       forrigeMellom = mellomrom;
-      lcd.setCursor(0,0);
+      lcd.setCursor(0, 0);
       lcd.print("SCORE:");
-      lcd.setCursor(0,1);
+      lcd.setCursor(0, 1);
       totalsum + stor;
       lcd.print(totalsum + " +300");
-      if(antallPushUps == 1){
-        lcd.setCursor(0,0);
+      if (antallPushUps == 1) {
+        lcd.setCursor(0, 0);
         lcd.print("SCORE:");
-        lcd.setCursor(0,1);
+        lcd.setCursor(0, 1);
         totalsum + 500;
-      	lcd.print(totalsum + " +800");
+        lcd.print(totalsum + " +800");
       }
-      if(antallPushUps == 2){
-        lcd.setCursor(0,0);
+      if (antallPushUps == 2) {
+        lcd.setCursor(0, 0);
         lcd.print("SCORE:");
-        lcd.setCursor(0,1);
+        lcd.setCursor(0, 1);
         totalsum + 600;
-      	lcd.print(totalsum + " +900");
+        lcd.print(totalsum + " +900");
       }
-      if(antallPushUps == 3){
-        lcd.setCursor(0,0);
+      if (antallPushUps == 3) {
+        lcd.setCursor(0, 0);
         lcd.print("SCORE:");
-        lcd.setCursor(0,1);
+        lcd.setCursor(0, 1);
         totalsum + 700;
-      	lcd.print(totalsum + " +1000");
+        lcd.print(totalsum + " +1000");
       }
-      if(antallPushUps == 4){
-        lcd.setCursor(0,0);
+      if (antallPushUps == 4) {
+        lcd.setCursor(0, 0);
         lcd.print("SCORE:");
-        lcd.setCursor(0,1);
+        lcd.setCursor(0, 1);
         totalsum + 800;
-      	lcd.print(totalsum + " +1100");
+        lcd.print(totalsum + " +1100");
       }
-      if(antallPushUps == 5){
-        lcd.setCursor(0,0);
+      if (antallPushUps == 5) {
+        lcd.setCursor(0, 0);
         lcd.print("SCORE:");
-        lcd.setCursor(0,1);
+        lcd.setCursor(0, 1);
         totalsum + 900;
-      	lcd.print(totalsum + " +1200");
+        lcd.print(totalsum + " +1200");
       }
-      if(antallPushUps > 5){
-        lcd.setCursor(0,0);
+      if (antallPushUps > 5) {
+        lcd.setCursor(0, 0);
         lcd.print("SCORE:");
-        lcd.setCursor(0,1);
+        lcd.setCursor(0, 1);
         totalsum + 1000;
-      	lcd.print(totalsum + " +1300");
+        lcd.print(totalsum + " +1300");
       }
       antallPushUps++;// legger det til tellingen
     }
   }
-
-  //fjern Serial.print og lcd med antall push-ups
-  Serial.print(cm);
-  Serial.print("cm");
-  Serial.println(antallPushUps - 1);//sensoren starter på 0 aom gjør at antallet starter på 1, så tar -1 for gjør at det kommer den riktige antallet
 }
