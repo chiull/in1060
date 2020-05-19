@@ -454,6 +454,11 @@ void nyRandom() { //metode for aa generere nye tall for random
 }
 
 void PushUps() {
+  int tall = 0;
+  if (tall == 0){
+    lcd.clear();
+    tall++;
+  }
   //slår av alle lysene til begynne med
   digitalWrite(gronn, LOW);
   digitalWrite(gul, LOW);
@@ -509,6 +514,10 @@ void PushUps() {
         totalsum += 1000;
       }
       antallPushUps++;// legger det til tellingen
+      lcd.setCursor(0, 0);
+      lcd.print("ANT: " + antallPushUps);
+      lcd.setCursor(0, 1);
+      lcd.print(totalsum);
     }
   }
 }
