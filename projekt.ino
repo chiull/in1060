@@ -442,7 +442,6 @@ void ferdig() { //dette kjøører naar man har stoppet programmet eller naar tid
   digitalWrite(gul, LOW);
   digitalWrite(rod, LOW);
   digitalWrite(bla, LOW);
-  start = 0;
   forrigeFire = fireMin;
   forrigeEn = enMin;
   totalsum = 0;
@@ -479,37 +478,32 @@ void PushUps() {
   if (cm <= 10) { // sjekker om man er innen 10cm til sensoren
     if (mellomrom - forrigeMellom > 350) {
       forrigeMellom = mellomrom;
-      if (antallPushUps == 0); {
-        lcd.setCursor(10, 1);
-        lcd.print("+300");
-        totalsum += stor;
-      }
       if (antallPushUps == 1) {
         lcd.setCursor(10, 1);
         lcd.print("+500");
         totalsum += 500;
       }
-      if (antallPushUps == 3) {
+      if (antallPushUps == 2) {
         lcd.setCursor(10, 1);
         lcd.print("+600");
         totalsum += 600;
       }
-      if (antallPushUps == 4) {
+      if (antallPushUps == 3) {
         lcd.setCursor(10, 1);
         lcd.print("+700");
         totalsum += 700;
       }
-      if (antallPushUps == 5) {
+      if (antallPushUps == 4) {
         lcd.setCursor(10, 1);
         lcd.print("+800");
         totalsum += 800;
       }
-      if (antallPushUps == 6) {
+      if (antallPushUps == 5) {
         lcd.setCursor(10, 1);
         lcd.print("+900");
         totalsum += 900;
       }
-      if (antallPushUps > 6) {
+      if (antallPushUps > 5) {
         lcd.setCursor(10, 1);
         lcd.print("+1000");
         totalsum += 1000;
