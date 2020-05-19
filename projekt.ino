@@ -149,7 +149,7 @@ void loop() {
         highScore = totalsum;
       }
       endeligSum = totalsum;
-      if (interv - forrigeInterv > 0) {
+      if (interv - forrigeInterv < 5000) {
         lcd.setCursor(0, 0);
         lcd.print("FINAL SCORE");
         lcd.setCursor(0, 1);
