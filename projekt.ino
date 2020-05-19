@@ -27,6 +27,7 @@ unsigned long forrigeInterv = 0;
 int stor = 300;
 int medium = 100;
 int liten = 50;
+int tall = 0;
 
 //variabler for push-ups/ultrasonic distance sensor
 int trigPin = A5;
@@ -71,7 +72,7 @@ void setup() {
   digitalWrite(gulKnapp, HIGH);
   digitalWrite(rodKnapp, HIGH);
   digitalWrite(blaKnapp, HIGH);
-  digitalWrite(startButton, LOW);
+  digitalWrite(startButton, HIGH);
 
   //skjermsetup
   lcd.begin(16, 2);
@@ -89,7 +90,7 @@ void loop() {
 
   debounce = millis();//Debounce for gjoor at knappen ikke start ikke stopper med engang hvis man holder det litt for lenge
   if (debounce - forrigeDebounce > 500) {
-    if (digitalRead(startButton) == HIGH) { //trykker paa start knappen gjoor at den kan kjoore
+    if (digitalRead(startButton) == LOW) { //trykker paa start knappen gjoor at den kan kjoore
       forrigeDebounce = debounce;
       if (start == 0) { //gjoor at den kjoorer
         start = 255;
@@ -100,21 +101,21 @@ void loop() {
       } else { //trykker en gang til for aa gjoore at den ikke kjoorer
         ferdig();
         lcd.clear();
+        start = 0;
       }
     }
   }
 
   if (start > 0) {
     timer = millis();
-
     if (timer - forrigeTimer < 600000) { //programmet skal vaere 10 min lang foor den slaar seg av
-      lcd.setCursor(0, 0);
-      lcd.print("SCORE");
-      lcd.setCursor(0, 1);
-      lcd.print(totalsum);
       fireMin = millis();
       enMin = millis();
       if (fireMin - forrigeFire < 240000) { //programmet for selve danse delen
+        lcd.setCursor(0, 0);
+        lcd.print("SCORE");
+        lcd.setCursor(0, 1);
+        lcd.print(totalsum);
         tid = millis();
         if (tid - forrige > intervall) { //intervaller for naar det skal komme random nummer
           forrige = tid;
@@ -126,6 +127,12 @@ void loop() {
           toLys(randomNumber, r2);
         }
       }
+      if (fireMin - forrigeFire > 240000) {
+        if (tall == 0) {
+          lcd.clear();
+          tall++;
+        }
+      }
       if (enMin - forrigeEn > 240000) { // programmet for push-ups delen
         PushUps();
       }
@@ -133,6 +140,7 @@ void loop() {
         forrigeFire = fireMin;
         forrigeEn = enMin;
         antallPushUps = 0;
+        tall = 0;
         lcd.clear();
       }
     } else {
@@ -153,7 +161,7 @@ void loop() {
         lcd.setCursor(0, 1);
         lcd.print(highScore);
       }
-      if (interv - forrigeInterv > 5000) {
+      if (interv - forrigeInterv > 10000) {
         forrigeInterv = interv;
       }
       ferdig();
@@ -454,11 +462,13 @@ void nyRandom() { //metode for aa generere nye tall for random
 }
 
 void PushUps() {
-  int tall = 0;
-  if (tall == 0){
-    lcd.clear();
-    tall++;
-  }
+  lcd.setCursor(0, 0);
+  lcd.print("Push ups");
+  lcd.setCursor(0, 1);
+  lcd.print("antall");
+  lcd.setCursor(8, 1);
+  lcd.print(antallPushUps);
+
   //slår av alle lysene til begynne med
   digitalWrite(gronn, LOW);
   digitalWrite(gul, LOW);
@@ -484,40 +494,24 @@ void PushUps() {
     if (mellomrom - forrigeMellom > 350) {
       forrigeMellom = mellomrom;
       if (antallPushUps == 1) {
-        lcd.setCursor(10, 1);
-        lcd.print("+500");
         totalsum += 500;
       }
       if (antallPushUps == 2) {
-        lcd.setCursor(10, 1);
-        lcd.print("+600");
         totalsum += 600;
       }
       if (antallPushUps == 3) {
-        lcd.setCursor(10, 1);
-        lcd.print("+700");
         totalsum += 700;
       }
       if (antallPushUps == 4) {
-        lcd.setCursor(10, 1);
-        lcd.print("+800");
         totalsum += 800;
       }
       if (antallPushUps == 5) {
-        lcd.setCursor(10, 1);
-        lcd.print("+900");
         totalsum += 900;
       }
       if (antallPushUps > 5) {
-        lcd.setCursor(10, 1);
-        lcd.print("+1000");
         totalsum += 1000;
       }
       antallPushUps++;// legger det til tellingen
-      lcd.setCursor(0, 0);
-      lcd.print("ANT: " + antallPushUps);
-      lcd.setCursor(0, 1);
-      lcd.print(totalsum);
     }
   }
 }
