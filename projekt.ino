@@ -25,9 +25,9 @@ unsigned long highScore = 0;
 unsigned long interv = 0;
 unsigned long forrigeInterv = 0;
 int stor = 300;
-int medium = 100;
-int liten = 50;
 int tall = 0;
+int t = 0;
+int forst = 0;
 
 //variabler for push-ups/ultrasonic distance sensor
 int trigPin = A5;
@@ -79,15 +79,9 @@ void setup() {
 
   //RandomSeed er for aa kunne gjoore at det blir random tall hele tiden ved aa bruke en analog port som ikke blir brukt.
   randomSeed(analogRead(A0));
-
 }
 
 void loop() {
-  if (start == 0) { //skal vise til brukeren at de kan starte spillet
-    lcd.setCursor(0, 0);
-    lcd.print("Start spillet");
-  }
-
   debounce = millis();//Debounce for gjoor at knappen ikke start ikke stopper med engang hvis man holder det litt for lenge
   if (debounce - forrigeDebounce > 500) {
     if (digitalRead(startButton) == LOW) { //trykker paa start knappen gjoor at den kan kjoore
@@ -97,6 +91,8 @@ void loop() {
         forrigeTimer = timer;
         forrigeFire = fireMin;
         forrigeEn = enMin;
+        tall = 0;
+        forst = 0;
         lcd.clear();
       } else { //trykker en gang til for aa gjoore at den ikke kjoorer
         ferdig();
@@ -105,7 +101,10 @@ void loop() {
       }
     }
   }
-
+  if (start == 0) { //skal vise til brukeren at de kan starte spillet
+    lcd.setCursor(0, 0);
+    lcd.print("Start spillet");
+  }
   if (start > 0) {
     timer = millis();
     if (timer - forrigeTimer < 600000) { //programmet skal vaere 10 min lang foor den slaar seg av
@@ -148,14 +147,25 @@ void loop() {
       if (totalsum > highScore) {
         highScore = totalsum;
       }
-      endeligSum = totalsum;
+      if (forst == 0){
+        endeligSum = totalsum;
+        forst++;
+      }
       if (interv - forrigeInterv < 5000) {
+        if (tall == 0) {
+          lcd.clear();
+          tall++;
+        }
         lcd.setCursor(0, 0);
         lcd.print("FINAL SCORE");
         lcd.setCursor(0, 1);
         lcd.print(endeligSum);
       }
       if (interv - forrigeInterv > 5000) {
+        if (t == 0) {
+          lcd.clear();
+          t++;
+        }
         lcd.setCursor(0, 0);
         lcd.print("HIGHSCORE");
         lcd.setCursor(0, 1);
@@ -163,6 +173,8 @@ void loop() {
       }
       if (interv - forrigeInterv > 10000) {
         forrigeInterv = interv;
+        tall = 0;
+        t = 0;
       }
       ferdig();
     }
