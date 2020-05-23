@@ -1,6 +1,6 @@
 #include <LiquidCrystal.h>
 
-//Pin som blir brukt
+//Pin som blir brukt for lys og start knappen
 int gronn = 2;
 int gul = 3;
 int rod = 4;
@@ -14,11 +14,11 @@ int startButton = 6;
 //variabler som skal holde de random tallene
 unsigned long randomNumber;
 unsigned long r2;
-long enEllerTo;
+unsigned long enEllerTo;
 
-//variabler for poengsum utregninga
+//variabler for poengsum utregninga og lcd skjerm
 LiquidCrystal lcd(13, 12, 11, 10, 9, 8);
-int Contrast = 75;
+int Contrast = 75; //Contrast er brukt for å slippe å bruke potensiometer på LCD skjerm.
 unsigned long totalsum = 0;
 unsigned long endeligSum = 0;
 unsigned long highScore = 0;
@@ -30,8 +30,8 @@ int t = 0;
 int forst = 0;
 
 //variabler for push-ups/ultrasonic distance sensor
-int trigPin = A5;
-int echoPin = 7;
+int trigPin = A5; //trigger pin på sensoren for input
+int echoPin = 7; //echo pin på sensoren for output
 unsigned long varighet = 0;
 unsigned long cm = 0;
 int antallPushUps = 0;
@@ -56,7 +56,7 @@ int debounce = 0;
 int forrigeDebounce = 0;
 
 void setup() {
-  analogWrite(1, Contrast);
+  analogWrite(1, Contrast);//setter kontrast på LCD skjerm
   pinMode(gronn, OUTPUT);
   pinMode(gul, OUTPUT);
   pinMode(rod, OUTPUT);
@@ -87,17 +87,18 @@ void loop() {
     if (digitalRead(startButton) == LOW) { //trykker paa start knappen gjoor at den kan kjoore
       forrigeDebounce = debounce;
       if (start == 0) { //gjoor at den kjoorer
-        start = 255;
-        forrigeTimer = timer;
+        start = 255; //gjør at start = 255 sånn at den starter selve hovedprogrammet
+        //setter forrige lik som timer, fireMin og enMin sånn at den starter på begynnelsen når man trykker på start knappen
+        forrigeTimer = timer; 
         forrigeFire = fireMin;
         forrigeEn = enMin;
-        tall = 0;
-        forst = 0;
-        lcd.clear();
+        tall = 0; //tall er brukt for å fjerne det som står på lcd skjermen første gang istedenfor gjøre det hele tiden
+        forst = 0; //forst gjør at den endeligePoengsummen er totalpoengsum uten at det endrer seg hele tiden 
+        lcd.clear(); //fjerner alt som står på lcd
       } else { //trykker en gang til for aa gjoore at den ikke kjoorer
         ferdig();
         lcd.clear();
-        start = 0;
+        start = 0; //setter start som 0, sånn at den kan starte opp igjen hvis man trykker på start
       }
     }
   }
@@ -105,7 +106,7 @@ void loop() {
     lcd.setCursor(0, 0);
     lcd.print("Start spillet");
   }
-  if (start > 0) {
+  if (start > 0) { //Dette er det som kjører når man trykker på start knappen
     timer = millis();
     if (timer - forrigeTimer < 600000) { //programmet skal vaere 10 min lang foor den slaar seg av
       fireMin = millis();
@@ -126,7 +127,7 @@ void loop() {
           toLys(randomNumber, r2);
         }
       }
-      if (fireMin - forrigeFire > 240000) {
+      if (fireMin - forrigeFire > 240000) {//fjerner det som er på skjermen, og gjør det klart til å gå over til Push-Ups fasen
         if (tall == 0) {
           lcd.clear();
           tall++;
@@ -142,17 +143,17 @@ void loop() {
         tall = 0;
         lcd.clear();
       }
-    } else {
+    } else { //dette slutt delen, som roterer mellom poengsummet du fikk for den runden og høyeste poengsummen man har fått for den spill økten
       interv = millis();
-      if (totalsum > highScore) {
+      if (totalsum > highScore) {//setter ny highScore hvis totalsum er større
         highScore = totalsum;
       }
-      if (forst == 0){
+      if (forst == 0){ //gjør at endeligSum har poensummet som brukeren fikk i løpet av runden
         endeligSum = totalsum;
         forst++;
       }
-      if (interv - forrigeInterv < 5000) {
-        if (tall == 0) {
+      if (interv - forrigeInterv < 5000) { //viser den endelige poengsummet for runden
+        if (tall == 0) { //brukt for gjør at skjermen ikke blinker
           lcd.clear();
           tall++;
         }
@@ -161,8 +162,8 @@ void loop() {
         lcd.setCursor(0, 1);
         lcd.print(endeligSum);
       }
-      if (interv - forrigeInterv > 5000) {
-        if (t == 0) {
+      if (interv - forrigeInterv > 5000) {//viser den høyeste poengsummen for en spille økt
+        if (t == 0) {//brukt for gjør at skjermen ikke blinker
           lcd.clear();
           t++;
         }
@@ -171,12 +172,12 @@ void loop() {
         lcd.setCursor(0, 1);
         lcd.print(highScore);
       }
-      if (interv - forrigeInterv > 10000) {
+      if (interv - forrigeInterv > 10000) { //gjør at den starter på nytt med å vise poengsummen
         forrigeInterv = interv;
         tall = 0;
         t = 0;
       }
-      ferdig();
+      ferdig(); //gjør at lysene er av
     }
   }
 }
@@ -184,15 +185,16 @@ void loop() {
 void enLys(int rnd) {
   //gronn LED
   if (tid - forrige < intervall) {
-    if (rnd == 0) {
+    if (rnd == 0) { 
       if (clicked == 0) {
-        if (digitalRead(gronnKnapp) == HIGH) {
+        if (digitalRead(gronnKnapp) == HIGH) { //hvis knappen ikke er trykket på så vil denne kjøre
           digitalWrite(gronn, HIGH);
           digitalWrite(gul, LOW);
           digitalWrite(rod, LOW);
           digitalWrite(bla, LOW);
-        } else {
+        } else { //når den blir trykket på så skifter den til neste farge med engang
           digitalWrite(gronn, LOW);
+          //gir poeng paa riktig klikk
           totalsum += stor;
           clicked++;
         }
@@ -212,12 +214,12 @@ void enLys(int rnd) {
   if (tid - forrige < intervall) {
     if (rnd == 1) {
       if (clicked == 0) {
-        if (digitalRead(gulKnapp) == HIGH) {
+        if (digitalRead(gulKnapp) == HIGH) {//hvis knappen ikke er trykket på så vil denne kjøre
           digitalWrite(gronn, LOW);
           digitalWrite(gul, HIGH);
           digitalWrite(rod, LOW);
           digitalWrite(bla, LOW);
-        } else {
+        } else { //når den blir trykket på så skifter den til neste farge med engang
           digitalWrite(gul, LOW);
           //gir poeng paa riktig klikk
           totalsum += stor;
@@ -238,12 +240,12 @@ void enLys(int rnd) {
   if (tid - forrige < intervall) {
     if (rnd == 2) {
       if (clicked == 0) {
-        if (digitalRead(rodKnapp) == HIGH) {
+        if (digitalRead(rodKnapp) == HIGH) {//hvis knappen ikke er trykket på så vil denne kjøre
           digitalWrite(gronn, LOW);
           digitalWrite(gul, LOW);
           digitalWrite(rod, HIGH);
           digitalWrite(bla, LOW);
-        } else {
+        } else { //når den blir trykket på så skifter den til neste farge med engang
           digitalWrite(rod, LOW);
           //gir poeng paa riktig klikk
           totalsum += stor;
@@ -264,12 +266,12 @@ void enLys(int rnd) {
   if (tid - forrige < intervall) {
     if (rnd == 3) {
       if (clicked == 0) {
-        if (digitalRead(blaKnapp) == HIGH) {
+        if (digitalRead(blaKnapp) == HIGH) {//hvis knappen ikke er trykket på så vil denne kjøre
           digitalWrite(gronn, LOW);
           digitalWrite(gul, LOW);
           digitalWrite(rod, LOW);
           digitalWrite(bla, HIGH);
-        } else {
+        } else {//når den blir trykket på så skifter den til neste farge med engang
           digitalWrite(bla, LOW);
           //gir poeng paa riktig klikk
           totalsum += stor;
@@ -292,13 +294,13 @@ void toLys(int rnd, int r) {
   if (tid - forrige < intervall) {
     if ((rnd == 0 && r == 1) || (rnd == 1 && r == 0)) {
       if (clicked == 0) {
-        if (digitalRead(gronnKnapp) == LOW && digitalRead(gulKnapp) == LOW) {
+        if (digitalRead(gronnKnapp) == LOW && digitalRead(gulKnapp) == LOW) { //hvis knappene blir trykket så får man poeng og endrer fargen
           digitalWrite(gronn, LOW);
           digitalWrite(gul, LOW);
           //gir poeng paa riktig klikk
           totalsum += stor;
           clicked++;
-        } else {
+        } else {//denne kjører så lenge knappen ikke er trykket på
           digitalWrite(gronn, HIGH);
           digitalWrite(gul, HIGH);
           digitalWrite(rod, LOW);
@@ -310,23 +312,23 @@ void toLys(int rnd, int r) {
         clicked = 0;
       }
     }
-  } else {
+  } else { //denne kjører når tiden har gått over
     digitalWrite(gronn, LOW);
     digitalWrite(gul, LOW);
     clicked = 0;
   }
 
   //gronn og rod LED
-  if (tid - forrige < intervall) {
+  if (tid - forrige < intervall) { 
     if ((rnd == 0 && r == 2) || (rnd == 2 && r == 0)) {
       if (clicked == 0) {
-        if (digitalRead(gronnKnapp) == LOW && digitalRead(rodKnapp) == LOW) {
+        if (digitalRead(gronnKnapp) == LOW && digitalRead(rodKnapp) == LOW) {//hvis knappene blir trykket så får man poeng og endrer fargen
           digitalWrite(gronn, LOW);
           digitalWrite(rod, LOW);
           //gir poeng paa riktig klikk
           totalsum += stor;
           clicked++;
-        } else {
+        } else {//denne kjører så lenge knappen ikke er trykket på
           digitalWrite(gronn, HIGH);
           digitalWrite(rod, HIGH);
           digitalWrite(gul, LOW);
@@ -338,7 +340,7 @@ void toLys(int rnd, int r) {
         clicked = 0;
       }
     }
-  } else {
+  } else {//denne kjører når tiden har gått over
     digitalWrite(gronn, LOW);
     digitalWrite(rod, LOW);
     clicked = 0;
@@ -348,13 +350,13 @@ void toLys(int rnd, int r) {
   if (tid - forrige < intervall) {
     if ((rnd == 0 && r == 3) || (rnd == 3 && r == 0)) {
       if (clicked == 0) {
-        if (digitalRead(gronnKnapp) == LOW && digitalRead(blaKnapp) == LOW) {
+        if (digitalRead(gronnKnapp) == LOW && digitalRead(blaKnapp) == LOW) {//hvis knappene blir trykket så får man poeng og endrer fargen
           digitalWrite(gronn, LOW);
           digitalWrite(bla, LOW);
           //gir poeng paa riktig klikk
           totalsum += stor;
           clicked++;
-        } else {
+        } else {//denne kjører så lenge knappen ikke er trykket på
           digitalWrite(gronn, HIGH);
           digitalWrite(bla, HIGH);
           digitalWrite(gul, LOW);
@@ -366,7 +368,7 @@ void toLys(int rnd, int r) {
         clicked = 0;
       }
     }
-  } else {
+  } else {//denne kjører når tiden har gått over
     digitalWrite(gronn, LOW);
     digitalWrite(bla, LOW);
     clicked = 0;
@@ -376,13 +378,13 @@ void toLys(int rnd, int r) {
   if (tid - forrige < intervall) {
     if ((rnd == 1 && r == 2) || (rnd == 2 && r == 1)) {
       if (clicked == 0) {
-        if (digitalRead(gulKnapp) == LOW && digitalRead(rodKnapp) == LOW) {
+        if (digitalRead(gulKnapp) == LOW && digitalRead(rodKnapp) == LOW) {//hvis knappene blir trykket så får man poeng og endrer fargen
           digitalWrite(gul, LOW);
           digitalWrite(rod, LOW);
           //gir poeng paa riktig klikk
           totalsum += stor;
           clicked++;
-        } else {
+        } else {//denne kjører så lenge knappen ikke er trykket på
           digitalWrite(gul, HIGH);
           digitalWrite(rod, HIGH);
           digitalWrite(gronn, LOW);
@@ -394,7 +396,7 @@ void toLys(int rnd, int r) {
         clicked = 0;
       }
     }
-  } else {
+  } else {//denne kjører når tiden har gått over
     digitalWrite(gul, LOW);
     digitalWrite(rod, LOW);
     clicked = 0;
@@ -404,13 +406,13 @@ void toLys(int rnd, int r) {
   if (tid - forrige < intervall) {
     if ((rnd == 1 && r == 3) || (rnd == 3 && r == 1)) {
       if (clicked == 0) {
-        if (digitalRead(gulKnapp) == LOW && digitalRead(blaKnapp) == LOW) {
+        if (digitalRead(gulKnapp) == LOW && digitalRead(blaKnapp) == LOW) {//hvis knappene blir trykket så får man poeng og endrer fargen
           digitalWrite(gul, LOW);
           digitalWrite(bla, LOW);
           //gir poeng paa riktig klikk
           totalsum += stor;
           clicked++;
-        } else {
+        } else {//denne kjører så lenge knappen ikke er trykket på
           digitalWrite(gul, HIGH);
           digitalWrite(bla, HIGH);
           digitalWrite(gronn, LOW);
@@ -422,7 +424,7 @@ void toLys(int rnd, int r) {
         clicked = 0;
       }
     }
-  } else {
+  } else {//denne kjører når tiden har gått over
     digitalWrite(gul, LOW);
     digitalWrite(bla, LOW);
     clicked = 0;
@@ -432,13 +434,13 @@ void toLys(int rnd, int r) {
   if (tid - forrige < intervall) {
     if ((rnd == 2 && r == 3) || (rnd == 3 && r == 2)) {
       if (clicked == 0) {
-        if (digitalRead(rodKnapp) == LOW && digitalRead(blaKnapp) == LOW) {
+        if (digitalRead(rodKnapp) == LOW && digitalRead(blaKnapp) == LOW) {//hvis knappene blir trykket så får man poeng og endrer fargen
           digitalWrite(rod, LOW);
           digitalWrite(bla, LOW);
           //gir poeng paa riktig klikk
           totalsum += stor;
           clicked++;
-        } else {
+        } else {//denne kjører så lenge knappen ikke er trykket på
           digitalWrite(rod, HIGH);
           digitalWrite(bla, HIGH);
           digitalWrite(gronn, LOW);
@@ -450,7 +452,7 @@ void toLys(int rnd, int r) {
         clicked = 0;
       }
     }
-  } else {
+  } else {//denne kjører når tiden har gått over
     digitalWrite(rod, LOW);
     digitalWrite(bla, LOW);
     clicked = 0;
@@ -473,7 +475,8 @@ void nyRandom() { //metode for aa generere nye tall for random
   r2 = random(0, 4);
 }
 
-void PushUps() {
+void PushUps() { //metoden for Push-Ups fasen
+  //endrer lcd skjermen til å vise antall pushups, istedenfor poengsum
   lcd.setCursor(0, 0);
   lcd.print("Push ups");
   lcd.setCursor(0, 1);
@@ -505,6 +508,7 @@ void PushUps() {
   if (cm <= 10) { // sjekker om man er innen 10cm til sensoren
     if (mellomrom - forrigeMellom > 350) {
       forrigeMellom = mellomrom;
+      //poengene gradevis øker for hver antall Push-Ups
       if (antallPushUps == 1) {
         totalsum += 500;
       }
@@ -520,6 +524,7 @@ void PushUps() {
       if (antallPushUps == 5) {
         totalsum += 900;
       }
+      //når man har tatt mer enn 5 push-ups så får du samme poengsum for hver push-ups etter det
       if (antallPushUps > 5) {
         totalsum += 1000;
       }
